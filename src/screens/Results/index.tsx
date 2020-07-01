@@ -26,21 +26,26 @@ const Results = () => {
     }, [])
 
     const loadMovies = async () => {
-        if (loading) {
-            return
-        }
-
-        if (page === Math.ceil(total / 10)) {
-            return
-        }
-        
-        setLoading(true)
-        const response = await getMovies(routeParams.search, page)
-        setMovies({ totalResults: response.totalResults, Search: [...movies.Search, ...response.Search] })
-        setPage(page + 1)
-        setTotal(parseInt(response.totalResults))
-        setLoading(false)
+        try {
+            if (loading) {
+                return
+            }
+    
+            if (page === Math.ceil(total / 10)) {
+                return
+            }
+            
+            setLoading(true)
+            const response = await getMovies(routeParams.search, page)
+            setMovies({ totalResults: response.totalResults, Search: [...movies.Search, ...response.Search] })
+            setPage(page + 1)
+            setTotal(parseInt(response.totalResults))
+            setLoading(false)
+        } catch (error) {
+            setLoading(false)
+        } 
     }
+    
     return (
         <View style={styles.Container}>
             {
