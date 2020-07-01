@@ -1,5 +1,15 @@
+interface MovieList {
+    totalResults: string
+    Search: {
+        Title: string
+        Year: string
+        imdbID: string
+        Type: string
+        Poster: string
+    }[]
+}
 
-const getMovies = async (query: string, page?: number) => {
+async function getMovies(query: string, page?: number): Promise<MovieList>{
 
     const serializedQuery = query.replace(' ','+')
 
