@@ -1,5 +1,6 @@
 import React from 'react'
-import { Text, View, StyleSheet, Image } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 interface Props {
     title: string
@@ -21,26 +22,35 @@ function formatType(type: string) {
 }
 
 const SearchResult: React.FC<Props> = ({ title, year, type, poster, imdbID }) => {
+
+    const navigation = useNavigation()
+
+    function handleRedirectToDetails() {
+        navigation.navigate('Details', { imdbID })
+    }
+
     return (
-        <View style={styles.SearchResult} key={imdbID}>
-            <View style={styles.Details}>
-                <Text style={styles.TitleText}>
-                    {title}
-                </Text>
-                <Text style={styles.DetailsText}>
-                    {`Ano: ${year}`}
-                </Text>
-                <Text style={styles.DetailsText}>
-                    {`Tipo: ${formatType(type)}`}
-                </Text>
+        <TouchableOpacity onPress={handleRedirectToDetails}>
+            <View style={styles.SearchResult}>
+                <View style={styles.Details}>
+                    <Text style={styles.TitleText}>
+                        {title}
+                    </Text>
+                    <Text style={styles.DetailsText}>
+                        {`Ano: ${year}`}
+                    </Text>
+                    <Text style={styles.DetailsText}>
+                        {`Tipo: ${formatType(type)}`}
+                    </Text>
+                </View>
+                <View style={styles.Poster}>
+                    <Image
+                        style={styles.PosterImage}
+                        source={(poster !== 'N/A' ? { uri: poster } : require('../../assets/noposter.png'))}
+                    />
+                </View>
             </View>
-            <View style={styles.Poster}>
-                <Image
-                    style={styles.PosterImage}
-                    source={(poster !== 'N/A' ? { uri: poster } : require('../../assets/noposter.png'))}
-                />
-            </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 
@@ -82,4 +92,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SearchResult
+export default React.memo(SearchResult)

@@ -1,79 +1,45 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StyleSheet, FlatList } from 'react-native'
+import { View, StyleSheet, Text } from 'react-native'
 import { useRoute } from '@react-navigation/native'
-import getMovies from '../../services/api'
-
-import SearchResult from '../../components/SearchResult'
+import { getMovieDetailById, MovieDetails } from '../../services/api'
 
 interface Params {
-    search: string
-}
-
-interface MovieList {
-    totalResults: string
-    Search: {
-        Title: string
-        Year: string
-        imdbID: string
-        Type: string
-        Poster: string
-    }[]
+    imdbID: string
 }
 
 const Details = () => {
     const route = useRoute()
     const routeParams = route.params as Params
-    const [movies, setMovies] = useState<MovieList>({} as MovieList)
-    const [total, setTotal] = useState<number>(0)
-    const [page, setPage] = useState<number>(1)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [movieDetails, setMovieDetails] = useState<MovieDetails>()
 
     useEffect(() => {
-        getMovies(routeParams.search).then(response => {
-            setMovies(response)
-            setTotal(parseInt(response.totalResults))
-        })
-        setPage(page + 1)
+        getMovieDetailById(routeParams.imdbID).then(response => setMovieDetails(response))
     }, [])
 
-    const loadMovies = async () => {
-        if (loading) {
-            return
-        }
-
-        if (page === Math.ceil(total / 10)) {
-            return
-        }
-
-        setLoading(true)
-        const response = await getMovies(routeParams.search, page)
-        setMovies({ totalResults: response.totalResults, Search: [...movies.Search, ...response.Search] })
-        setPage(page + 1)
-        setLoading(false)
-    }
     return (
         <View style={styles.Container}>
             {
-                movies.totalResults ? (
-                    <>
-                        <FlatList
-                            data={movies.Search}
-                            onEndReached={loadMovies}
-                            onEndReachedThreshold={0.5}
-                            keyExtractor={movie => String(movie.imdbID)}
-                            style={styles.ResultsContainer}
-                            renderItem={({ item: movie }) => (
-                                <SearchResult
-                                    imdbID={movie.imdbID}
-                                    title={movie.Title}
-                                    year={movie.Year}
-                                    type={movie.Type}
-                                    poster={movie.Poster} />
-                            )}
-                        />
-                        {loading ? (<Text style={styles.Loading}>Carregando...</Text>) : null}
-                    </>)
-                    : <Text style={styles.Loading}>Carregando...</Text>
+                !movieDetails ?
+                    (
+                        <Text style={styles.Loading}>
+                            Carregando...
+                        </Text>
+                    )
+                    :
+                    (
+                        <View>
+                            <Text style={styles.TitleText}>
+                                {movieDetails.Title}
+                            </Text>
+                            {
+                                movieDetails.Ratings.map((item, index) =>
+                                    <Text
+                                        key={index}
+                                        style={styles.DetailsText}>{item.Value}
+                                    </Text>
+                                )}
+                        </View>
+                    )
             }
         </View>
     )
@@ -89,8 +55,18 @@ const styles = StyleSheet.create({
         fontFamily: 'Ubuntu_300Light',
         fontSize: 32
     },
-    ResultsContainer: {
-        marginTop: 36
-    }
+    TitleText: {
+        fontFamily: 'Ubuntu_700Bold',
+        fontSize: 20,
+        lineHeight: 32,
+        color: '#1d1d1f',
+        maxWidth: '85%'
+    },
+    DetailsText: {
+        fontFamily: 'Ubuntu_300Light',
+        fontSize: 18,
+        lineHeight: 24,
+        color: '#333'
+    },
 })
 export default Details

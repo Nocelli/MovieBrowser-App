@@ -1,5 +1,6 @@
 import React from 'react';
 import Home from './screens/Home'
+import Results from './screens/Results'
 import Details from './screens/Details'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,7 +13,8 @@ const Routes = () => {
     <NavigationContainer >
       <Stack.Navigator initialRouteName="Home" headerMode='none'>
         <Stack.Screen name="Home" component={Home}/>
-        <Stack.Screen name="Details" component={Details} />
+        <Stack.Screen name="Results" component={Results} />
+        <Stack.Screen name="Details" component={ Details} />
       </Stack.Navigator>
     </NavigationContainer>
 

@@ -8,7 +8,7 @@ const Home = () => {
     const [search,setSeatch] = useState('')
 
     const handleSearch = () => {
-        navigation.navigate('Details', { search })
+        navigation.navigate('Results', { search })
     } 
 
     return (
